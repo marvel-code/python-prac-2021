@@ -11,6 +11,7 @@ class Application(tk.Frame):
     super().__init__(master)
     self.grid()
     self.initSettings()
+    self.initPlayState()
     self.initUI()
 
   def initSettings(self):
@@ -18,6 +19,13 @@ class Application(tk.Frame):
     Init app settings.
     """
     self.playgroundSize = (4, 4)
+
+  def initPlayState(self):
+    """
+    Init play state
+    """
+    width, height = self.playgroundSize
+    self.emptyCell = (width - 1, height - 1)
 
   def initUI(self):
     """
