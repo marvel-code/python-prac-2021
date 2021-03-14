@@ -87,7 +87,20 @@ class Application(tk.Frame):
     Play `number`.
     """
     print(f'Play {number}')
-    pass
+
+    btn = getattr(self, f'btn_Play{number}')
+    btnGridInfo = btn.grid_info()
+    row, column = btnGridInfo['row'], btnGridInfo['column']
+
+    if self.isNearEmptyCell(row, column):
+      btn.grid(row=1+self.emptyCell[0], column=self.emptyCell[1])
+      self.emptyCell = (row - 1, column)
+
+  def isNearEmptyCell(self, row, column):
+    """
+    Is button near emptiness.
+    """
+    return abs(self.emptyCell[0] + 1 - row) + abs(self.emptyCell[1] - column) <= 1
 
   def makeNewPlaygroundSequence(self, width, height):
     """
