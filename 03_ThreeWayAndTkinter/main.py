@@ -73,7 +73,7 @@ class Application(tk.Frame):
       rowIndex = 1 + j // self.playgroundSize[0]
       columnIndex = j % self.playgroundSize[1]
       btn = getattr(self, f'btn_Play{i}')
-      btn.grid(row=rowIndex, column=columnIndex)
+      btn.grid(row=rowIndex, column=columnIndex, sticky=tk.N+tk.E+tk.S+tk.W)
       
       okRowIndex = 1 + i // self.playgroundSize[0]
       okColumnIndex = i % self.playgroundSize[1]
