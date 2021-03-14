@@ -137,6 +137,7 @@ class Application(tk.Frame):
     return playgroundIter
 
 
-app = Application()
-app.master.title('Boss Puzzle')
-app.mainloop()
+if __name__ == '__main__':
+  app = Application()
+  app.master.title('Boss Puzzle')
+  app.mainloop()
