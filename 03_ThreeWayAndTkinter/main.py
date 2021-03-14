@@ -41,19 +41,15 @@ class Application(tk.Frame):
     """
     Init playground.
     """
-    rowWidth, columnWidth = self.playgroundSize
-    playgroundIter = self.makeNewPlaygroundSequence(rowWidth, columnWidth)
+    playgroundAreaSize = self.playgroundSize[0] * self.playgroundSize[1]
+    for i in range(1, playgroundAreaSize):
+      btnName = f'btn_Play{i}'
+      def playHandler(number=i): 
+        self.play(number)
 
-    for rowIndex in range(1, rowWidth + 1):
-      isLastRow = rowIndex == rowWidth
-      for columnIndex in range(columnWidth - int(isLastRow)):
-        i = next(playgroundIter)
-        btnName = f'btn_Play{i}'
-        def playHandler(number=i): 
-          self.play(number)
+      setattr(self, btnName, tk.Button(self, text=i, command=playHandler))
 
-        setattr(self, btnName, tk.Button(self, text=i, command=playHandler))
-        getattr(self, btnName).grid(row=rowIndex, column=columnIndex)
+    self.startNewGame()
 
   def startNewGame(self):
     """
