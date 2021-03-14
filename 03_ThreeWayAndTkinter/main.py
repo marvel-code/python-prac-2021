@@ -9,8 +9,7 @@ class Application(tk.Frame):
     """
     Init app.
     """
-    super().__init__(master)
-    self.grid()
+    super().__init__(master, background='bisque')
     self.initSettings()
     self.initPlayState()
     self.initUI()
@@ -32,6 +31,7 @@ class Application(tk.Frame):
     """
     Init user interface.
     """
+    self.pack(fill=tk.BOTH, expand=True, padx=4, pady=4)
     self.initMenu()
     self.initPlayground()
 
@@ -43,8 +43,8 @@ class Application(tk.Frame):
     self.btn_Exit = tk.Button(self, text='Exit', command=self.quit)
 
     columnSpan = self.playgroundSize // 2
-    self.btn_New.grid(row=0, column=0, columnspan=columnSpan)
-    self.btn_Exit.grid(row=0, column=columnSpan, columnspan=columnSpan)
+    self.btn_New.grid(row=0, column=0, columnspan=columnSpan, sticky='nsew')
+    self.btn_Exit.grid(row=0, column=columnSpan, columnspan=columnSpan, sticky='nsew')
 
   def initPlayground(self):
     """
@@ -57,6 +57,10 @@ class Application(tk.Frame):
         self.play(number)
 
       setattr(self, btnName, tk.Button(self, text=i, command=playHandler))
+
+    for i in range(self.playgroundSize):
+      self.grid_columnconfigure(i, weight=1)
+      self.grid_rowconfigure(1 + i, weight=1)
 
     self.startNewGame()
 
