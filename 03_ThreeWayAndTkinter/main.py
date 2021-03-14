@@ -1,6 +1,7 @@
 import tkinter as tk
 from random import sample
 
+
 class Application(tk.Frame):
 
   def __init__(self, master=None):
@@ -54,18 +55,34 @@ class Application(tk.Frame):
         setattr(self, btnName, tk.Button(self, text=i, command=playHandler))
         getattr(self, btnName).grid(row=rowIndex, column=columnIndex)
 
-
   def startNewGame(self):
     """
     Start new game.
     """
-    pass
+    print('New game')
 
+    playgroundIter = self.makeNewPlaygroundSequence(*self.playgroundSize)
+    j = -1
+    missCount = 0
+    for i in playgroundIter:
+      j += 1
+      rowIndex = 1 + j // self.playgroundSize[0]
+      columnIndex = j % self.playgroundSize[1]
+      btn = getattr(self, f'btn_Play{i}')
+      btn.grid(row=rowIndex, column=columnIndex)
+      
+      okRowIndex = 1 + i // self.playgroundSize[0]
+      okColumnIndex = i % self.playgroundSize[1]
+      missCount += int(rowIndex != okRowIndex or columnIndex != okColumnIndex)
+
+    if missCount == 0:
+      self.startNewGame()
+    
   def play(self, number):
     """
     Play `number`.
     """
-    print(number)
+    print(f'Play {number}')
     pass
 
   def makeNewPlaygroundSequence(self, width, height):
