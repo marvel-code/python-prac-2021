@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import messagebox
 from random import sample
 
 
@@ -96,6 +97,25 @@ class Application(tk.Frame):
     if self.isNearEmptyCell(row, column):
       btn.grid(row=1+self.emptyCell[0], column=self.emptyCell[1])
       self.emptyCell = (row - 1, column)
+
+    self.tryToWin()
+
+  def tryToWin(self):
+    win = True
+
+    for i in range(self.playgroundSize[0] * self.playgroundSize[1] - 1):
+        irow = 1 + i // self.playgroundSize[0]
+        icolumn = i % self.playgroundSize[1]
+
+        btnGridInfo = getattr(self, f'btn_Play{1 + i}').grid_info()
+        row, column = btnGridInfo['row'], btnGridInfo['column']
+
+        if row != irow or column != icolumn:
+          win = False
+
+    if win:
+      messagebox.showinfo(message='You win!')
+
 
   def isNearEmptyCell(self, row, column):
     """
