@@ -40,20 +40,18 @@ class Application(tk.Frame):
     """
     Init playground.
     """
-    rowCount, columnCount = self.playgroundSize
+    rowWidth, columnWidth = self.playgroundSize
+    playgroundIter = self.makeNewPlaygroundSequence(rowWidth, columnWidth)
 
-    playgroundAreaSize = rowCount * columnCount
-    playgroundIter = iter(sample(range(1, playgroundAreaSize), playgroundAreaSize - 1))
-
-    for rowIndex in range(1, rowCount + 1):
-      isLastRow = rowIndex == rowCount
-      for columnIndex in range(columnCount - int(isLastRow)):
+    for rowIndex in range(1, rowWidth + 1):
+      isLastRow = rowIndex == rowWidth
+      for columnIndex in range(columnWidth - int(isLastRow)):
         i = next(playgroundIter)
         btnName = f'btn_Play{i}'
-        def clickHandler(number=i): 
+        def playHandler(number=i): 
           self.play(number)
 
-        setattr(self, btnName, tk.Button(self, text=i, command=clickHandler))
+        setattr(self, btnName, tk.Button(self, text=i, command=playHandler))
         getattr(self, btnName).grid(row=rowIndex, column=columnIndex)
 
 
@@ -69,6 +67,15 @@ class Application(tk.Frame):
     """
     print(number)
     pass
+
+  def makeNewPlaygroundSequence(self, width, height):
+    """
+    Make new play sequence for `width*height` playground.
+    """
+    playgroundAreaSize = width * height
+    playgroundIter = iter(sample(range(1, playgroundAreaSize), playgroundAreaSize - 1))
+
+    return playgroundIter
 
 
 app = Application()
