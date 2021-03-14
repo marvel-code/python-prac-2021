@@ -65,6 +65,7 @@ class Application(tk.Frame):
     """
     print('New game')
 
+    self.emptyCell = (self.playgroundSize[0] - 1, self.playgroundSize[1] - 1)
     playgroundIter = self.makeNewPlaygroundSequence(*self.playgroundSize)
     j = -1
     missCount = 0
