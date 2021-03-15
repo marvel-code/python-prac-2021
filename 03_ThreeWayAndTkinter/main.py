@@ -120,7 +120,6 @@ class Application(tk.Frame):
     if win:
       messagebox.showinfo(message='You win!')
 
-
   def isNearEmptyCell(self, row, column):
     """
     Is button near emptiness.
