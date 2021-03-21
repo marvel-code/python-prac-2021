@@ -71,6 +71,11 @@ class Application(tk.Frame):
         s = self.label_value.get()
         self.label_value.set(s[:p - 1] + s[p:])
         self.setCursorPosition(self.position - 1)
+    elif e.char:
+      p = self.position
+      s = self.label_value.get()
+      self.label_value.set(s[:p] + e.char + s[p:])
+      self.setCursorPosition(self.position + 1)
 
   def setCursorPosition(self, position):
     """
