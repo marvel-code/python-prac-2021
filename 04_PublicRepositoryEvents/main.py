@@ -21,25 +21,27 @@ class Application(tk.Frame):
     """
     Initiates user interface.
     """
-    self.lblInput = tk.Label(self, textvar=self.label_value, font=('Courier New', '24'), takefocus=1, anchor='w')
-    self.cursor = tk.Frame(master=self.lblInput, width=5, borderwidth=2, background="black")
+    self.lblInput = tk.Label(self, textvar=self.label_value, font=('Courier New', '24'), takefocus=1, borderwidth=1)
+    self.cursor = tk.Frame(master=self.lblInput, background="black")
     self.btnQuit = tk.Button(self, text="Quit", command=self.quit)
 
-    self.lblInput.bind('<Button>', self.on_lblInput_Click)
+    self.lblInput.bind('<Button-1>', self.on_lblInput_Click)
     self.lblInput.bind('<FocusIn>', self.on_lblInput_FocusIn)
     self.lblInput.bind('<FocusOut>', self.on_lblInput_FocusOut)
+    self.lblInput.bind('<KeyPress>', self.on_lblInput_KeyPress)
 
     self.lblInput.grid(sticky="EW")
     self.btnQuit.grid()
     self.cursor.place(width=1, relheight=1)
+    self.setCursorPosition(0)
 
   def on_lblInput_Click(self, e):
     """
     Handle click on label.
     """
-    if e.num == 1:
-      print(e)
-      self.setCursorPosition((e.x + self.FONT_WIDTH / 2) // self.FONT_WIDTH)
+    print(e)
+    self.lblInput.focus_set()
+    self.setCursorPosition((e.x + self.FONT_WIDTH / 2) // self.FONT_WIDTH)
 
   def on_lblInput_FocusIn(self, e):
     """
@@ -53,11 +55,27 @@ class Application(tk.Frame):
     """
     print(e)
 
+  def on_lblInput_KeyPress(self, e):
+    print(e)
+    if e.keysym == 'Right':
+      self.setCursorPosition(self.position + 1)
+    elif e.keysym == 'Left':
+      self.setCursorPosition(self.position - 1)
+    elif e.keysym == 'Home':
+      self.setCursorPosition(0)
+    elif e.keysym == 'End':
+      self.setCursorPosition(len(self.label_value.get()))
+
   def setCursorPosition(self, position):
     """
     Sets cursor position in label.
     """
     print('set', position)
+
+    position = min(position, len(self.label_value.get()))
+    position = max(0, position)
+    self.position = position
+
     self.cursor.place(width=1, relheight=1, x=position * self.FONT_WIDTH)
 
 
