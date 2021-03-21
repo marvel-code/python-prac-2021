@@ -65,6 +65,12 @@ class Application(tk.Frame):
       self.setCursorPosition(0)
     elif e.keysym == 'End':
       self.setCursorPosition(len(self.label_value.get()))
+    elif e.keysym == 'BackSpace':
+      p = self.position
+      if p > 0:
+        s = self.label_value.get()
+        self.label_value.set(s[:p - 1] + s[p:])
+        self.setCursorPosition(self.position - 1)
 
   def setCursorPosition(self, position):
     """
@@ -74,6 +80,7 @@ class Application(tk.Frame):
 
     position = min(position, len(self.label_value.get()))
     position = max(0, position)
+    position = int(position)
     self.position = position
 
     self.cursor.place(width=1, relheight=1, x=position * self.FONT_WIDTH)
