@@ -21,7 +21,7 @@ class Application(tk.Frame):
     """
     Initiates user interface.
     """
-    self.lblInput = tk.Label(self, textvar=self.label_value, font=('Courier New', '24'), takefocus=1, borderwidth=1)
+    self.lblInput = tk.Label(self, textvar=self.label_value, font=('Courier New', '24'), takefocus=1, borderwidth=1, relief="solid")
     self.cursor = tk.Frame(master=self.lblInput, background="black")
     self.btnQuit = tk.Button(self, text="Quit", command=self.quit)
 
@@ -48,12 +48,14 @@ class Application(tk.Frame):
     Focus in label.
     """
     print(e)
+    self.lblInput.relief = None
 
   def on_lblInput_FocusOut(self, e):
     """
     Focus out label.
     """
     print(e)
+    self.lblInput.borderwidth = 0
 
   def on_lblInput_KeyPress(self, e):
     print(e)
