@@ -33,7 +33,7 @@ class App(Application):
       self.figures = []
       self.createdOval = {
         'id': None,
-        'offset': (0, 0)
+        'coords': (0, 0, 0, 0)
       }
       self.figureDragging = {
         'id': None,
@@ -50,7 +50,22 @@ class App(Application):
       c.grid()
       t.grid()
 
-    # Oval dragging
+    # Figure serialization interface
+
+    def synTextWithCanvas(self):
+      self.t.delete('1.0', 'end')
+      for id in self.c.find_all():
+        figureType = self.c.type(id)
+        coords = self.c.coords(id)
+        options = self.c.itemconfigure(id)
+
+        width, fill, outline = options['width'][-1], options['fill'][-1], options['outline'][-1]
+        stringOptions = f'{width} {fill} {outline}'
+        
+        figureString = f'{figureType} {coords} {stringOptions}'
+        self.t.insert("end", figureString + '\n')
+
+    # Figure dragging
 
     def initFigureDragging(self, id, startMousePosition):
         self.figureDragging['id'] = id
@@ -70,7 +85,7 @@ class App(Application):
           outline=OVAL_DEFAULT_OUTLINECOLOR,
         )
       self.createdOval['id'] = id
-      self.createdOval['offset'] = offset
+      self.createdOval['coords'] = (*offset, 0, 0)
       self.figures.append(self.createdOval)
 
     # Events
@@ -86,8 +101,10 @@ class App(Application):
     def onCanvasMousemove(self, e):
       if self.createdOval['id']:
         id = self.createdOval['id']
-        x0, y0 = self.createdOval['offset']
-        self.c.coords(id, x0, y0, e.x, e.y)
+        x0, y0, _, _ = self.createdOval['coords']
+        coords = (x0, y0, e.x, e.y)
+        self.createdOval['coords'] = coords
+        self.c.coords(id, *coords)
       elif self.figureDragging['id']:
         mx0, my0 = self.figureDragging['startMousePosition']
         dx, dy = (e.x - mx0, e.y - my0)
@@ -95,6 +112,8 @@ class App(Application):
         self.dragFigure(id, dx, dy)
         
     def onCanvasMouseup(self, e):
+      self.synTextWithCanvas()
+
       self.createdOval['id'] = None
       self.figureDragging['id'] = None
       
