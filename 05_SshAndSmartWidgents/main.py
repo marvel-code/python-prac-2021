@@ -1,5 +1,6 @@
 import tkinter as tk
 import inspect
+import re
 
 
 OVAL_DEFAULT_FILLCOLOR = 'green'
@@ -47,6 +48,8 @@ class App(Application):
       c.bind("<Motion>", self.onCanvasMousemove)
       c.bind("<ButtonRelease-1>", self.onCanvasMouseup)
       self.t = t = tk.Text(self)
+      t.bind("<KeyRelease>", self.onTextKeyup)
+
       c.grid()
       t.grid()
 
@@ -64,6 +67,21 @@ class App(Application):
         
         figureString = f'{figureType} {coords} {stringOptions}'
         self.t.insert("end", figureString + '\n')
+
+    def synCanvasWithText(self):
+      for id in self.c.find_all():
+        self.c.delete(id)
+
+      text = self.t.get('1.0', 'end')
+      for line in text.split('\n'):
+        try:
+          figureType, coords, width, fill, outline = re.match(r"(.+) \[(.+)\] (.+) (.+) (.+)", line).groups()
+          coords = tuple(map(float, coords.split(',')))
+          width = float(width)
+
+          getattr(self.c, f'create_{figureType}').__call__(*coords, width=width, fill=fill, outline=outline)
+        except Exception as ex:
+          pass
 
     # Figure dragging
 
@@ -116,7 +134,9 @@ class App(Application):
 
       self.createdOval['id'] = None
       self.figureDragging['id'] = None
-      
+    
+    def onTextKeyup(self, e):
+      self.synCanvasWithText()
 
 app = App(title="Sample application")
 app.mainloop()
