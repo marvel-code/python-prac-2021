@@ -72,8 +72,11 @@ class App(Application):
       for id in self.c.find_all():
         self.c.delete(id)
 
+      self.t.tag_delete('error')
+      self.t.tag_configure('error', foreground="red")
       text = self.t.get('1.0', 'end')
-      for line in text.split('\n'):
+      for i, line in enumerate(text.split('\n')):
+        index = f'{1 + i}.0'
         try:
           figureType, coords, width, fill, outline = re.match(r"(.+) \[(.+)\] (.+) (.+) (.+)", line).groups()
           coords = tuple(map(float, coords.split(',')))
@@ -81,6 +84,7 @@ class App(Application):
 
           getattr(self.c, f'create_{figureType}').__call__(*coords, width=width, fill=fill, outline=outline)
         except Exception as ex:
+          self.t.tag_add('error', index, f'{index} lineend')
           pass
 
     # Figure dragging
