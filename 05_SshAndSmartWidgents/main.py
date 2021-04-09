@@ -28,7 +28,7 @@ class App(Application):
       self.createdOval = (None, 0, 0)
 
     def create_widgets(self):
-      self.c = c = tk.Canvas(self, bg="#fefefe", width="600", height="300")
+      self.c = c = tk.Canvas(self, bg="#e5ffff", width="600", height="300")
       c.bind("<Button-1>", self.onCanvasClick)
       c.bind("<Motion>", self.onCanvasMousemove)
       c.bind("<ButtonRelease-1>", self.onCanvasMouseup)
@@ -37,7 +37,7 @@ class App(Application):
       t.grid()
 
     def onCanvasClick(self, e):
-      self.createdOval = (self.c.create_oval(e.x, e.y, e.x, e.y), e.x, e.y)
+      self.createdOval = (self.c.create_oval(e.x, e.y, e.x, e.y, width=4, fill="red", outline="green"), e.x, e.y)
       self.figures.append(self.createdOval)
 
     def onCanvasMousemove(self, e):
