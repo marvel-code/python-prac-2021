@@ -1,6 +1,12 @@
 import tkinter as tk
 import inspect
 
+
+OVAL_DEFAULT_FILLCOLOR = 'green'
+OVAL_DEFAULT_BORDERWIDTH = 2
+OVAL_DEFAULT_OUTLINECOLOR = 'red'
+
+
 class Application(tk.Frame):
     '''Sample tkinter application class'''
 
@@ -25,7 +31,13 @@ class App(Application):
     def __init__(self, title, **kwargs):
       super().__init__(None, title, **kwargs)
       self.figures = []
-      self.createdOval = (None, 0, 0)
+      self.createdOval = (None, 0, 0) # id, x0, y0
+      self.figureDragging = {
+        'id': None,
+        'startCoords': (0, 0, 0, 0),
+        'startMousePosition': (0, 0),
+      }
+      #(None, 0, 0, 0, 0) # id, offsetX0, offsetY0, x0, y0
 
     def create_widgets(self):
       self.c = c = tk.Canvas(self, bg="#e5ffff", width="600", height="300")
@@ -37,17 +49,35 @@ class App(Application):
       t.grid()
 
     def onCanvasClick(self, e):
-      self.createdOval = (self.c.create_oval(e.x, e.y, e.x, e.y, width=4, fill="red", outline="green"), e.x, e.y)
-      self.figures.append(self.createdOval)
+      dragFigure = self.c.find_overlapping(e.x, e.y, e.x, e.y)
+      if len(dragFigure) > 0:
+        id = dragFigure[-1]
+        self.figureDragging['id'] = id
+        self.figureDragging['startCoords'] = self.c.coords(id)
+        self.figureDragging['startMousePosition'] = (e.x, e.y)
+      else:
+        id = self.c.create_oval(e.x, e.y, e.x, e.y,
+            width=OVAL_DEFAULT_BORDERWIDTH,
+            fill=OVAL_DEFAULT_FILLCOLOR,
+            outline=OVAL_DEFAULT_OUTLINECOLOR,
+          )
+        self.createdOval = (id, e.x, e.y)
+        self.figures.append(self.createdOval)
 
     def onCanvasMousemove(self, e):
       if self.createdOval[0]:
         id, x0, y0 = self.createdOval
         self.c.coords(id, x0, y0, e.x, e.y)
+      elif self.figureDragging['id']:
+        mx0, my0 = self.figureDragging['startMousePosition']
+        dx, dy = (e.x - mx0, e.y - my0)
+        id = self.figureDragging['id']
+        x0, y0, x1, y1 = self.figureDragging['startCoords']
+        self.c.coords(id, x0 + dx, y0 + dy, x1 + dx, y1 + dy)
         
     def onCanvasMouseup(self, e):
-      print(e)
       self.createdOval = (None, 0, 0)
+      self.figureDragging['id'] = None
       
 
 app = App(title="Sample application")
