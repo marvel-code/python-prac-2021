@@ -21,11 +21,33 @@ class Application(tk.Frame):
         '''Create all the widgets'''
 
 class App(Application):
+    
+    def __init__(self, title, **kwargs):
+      super().__init__(None, title, **kwargs)
+      self.figures = []
+      self.createdOval = (None, 0, 0)
+
     def create_widgets(self):
-      t = tk.Text(self)
-      c = tk.Canvas(self)
+      self.c = c = tk.Canvas(self, bg="#fefefe", width="600", height="300")
+      c.bind("<Button-1>", self.onCanvasClick)
+      c.bind("<Motion>", self.onCanvasMousemove)
+      c.bind("<ButtonRelease-1>", self.onCanvasMouseup)
+      self.t = t = tk.Text(self)
       c.grid()
       t.grid()
+
+    def onCanvasClick(self, e):
+      self.createdOval = (self.c.create_oval(e.x, e.y, e.x, e.y), e.x, e.y)
+      self.figures.append(self.createdOval)
+
+    def onCanvasMousemove(self, e):
+      if self.createdOval[0]:
+        id, x0, y0 = self.createdOval
+        self.c.coords(id, x0, y0, e.x, e.y)
+        
+    def onCanvasMouseup(self, e):
+      print(e)
+      self.createdOval = (None, 0, 0)
       
 
 app = App(title="Sample application")
