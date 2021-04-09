@@ -31,52 +31,71 @@ class App(Application):
     def __init__(self, title, **kwargs):
       super().__init__(None, title, **kwargs)
       self.figures = []
-      self.createdOval = (None, 0, 0) # id, x0, y0
+      self.createdOval = {
+        'id': None,
+        'offset': (0, 0)
+      }
       self.figureDragging = {
         'id': None,
         'startCoords': (0, 0, 0, 0),
         'startMousePosition': (0, 0),
       }
-      #(None, 0, 0, 0, 0) # id, offsetX0, offsetY0, x0, y0
 
     def create_widgets(self):
       self.c = c = tk.Canvas(self, bg="#e5ffff", width="600", height="300")
-      c.bind("<Button-1>", self.onCanvasClick)
+      c.bind("<Button-1>", self.onCanvasMousedown)
       c.bind("<Motion>", self.onCanvasMousemove)
       c.bind("<ButtonRelease-1>", self.onCanvasMouseup)
       self.t = t = tk.Text(self)
       c.grid()
       t.grid()
 
-    def onCanvasClick(self, e):
+    # Oval dragging
+
+    def initFigureDragging(self, id, startMousePosition):
+        self.figureDragging['id'] = id
+        self.figureDragging['startCoords'] = self.c.coords(id)
+        self.figureDragging['startMousePosition'] = startMousePosition
+
+    def dragFigure(self, id, dx, dy):
+        x0, y0, x1, y1 = self.figureDragging['startCoords']
+        self.c.coords(id, x0 + dx, y0 + dy, x1 + dx, y1 + dy)
+
+    # Oval creation
+
+    def createOval(self, offset):
+      id = self.c.create_oval(*offset, *offset,
+          width=OVAL_DEFAULT_BORDERWIDTH,
+          fill=OVAL_DEFAULT_FILLCOLOR,
+          outline=OVAL_DEFAULT_OUTLINECOLOR,
+        )
+      self.createdOval['id'] = id
+      self.createdOval['offset'] = offset
+      self.figures.append(self.createdOval)
+
+    # Events
+
+    def onCanvasMousedown(self, e):
       dragFigure = self.c.find_overlapping(e.x, e.y, e.x, e.y)
       if len(dragFigure) > 0:
         id = dragFigure[-1]
-        self.figureDragging['id'] = id
-        self.figureDragging['startCoords'] = self.c.coords(id)
-        self.figureDragging['startMousePosition'] = (e.x, e.y)
+        self.initFigureDragging(id, (e.x, e.y))
       else:
-        id = self.c.create_oval(e.x, e.y, e.x, e.y,
-            width=OVAL_DEFAULT_BORDERWIDTH,
-            fill=OVAL_DEFAULT_FILLCOLOR,
-            outline=OVAL_DEFAULT_OUTLINECOLOR,
-          )
-        self.createdOval = (id, e.x, e.y)
-        self.figures.append(self.createdOval)
+        self.createOval((e.x, e.y))
 
     def onCanvasMousemove(self, e):
-      if self.createdOval[0]:
-        id, x0, y0 = self.createdOval
+      if self.createdOval['id']:
+        id = self.createdOval['id']
+        x0, y0 = self.createdOval['offset']
         self.c.coords(id, x0, y0, e.x, e.y)
       elif self.figureDragging['id']:
         mx0, my0 = self.figureDragging['startMousePosition']
         dx, dy = (e.x - mx0, e.y - my0)
         id = self.figureDragging['id']
-        x0, y0, x1, y1 = self.figureDragging['startCoords']
-        self.c.coords(id, x0 + dx, y0 + dy, x1 + dx, y1 + dy)
+        self.dragFigure(id, dx, dy)
         
     def onCanvasMouseup(self, e):
-      self.createdOval = (None, 0, 0)
+      self.createdOval['id'] = None
       self.figureDragging['id'] = None
       
 
